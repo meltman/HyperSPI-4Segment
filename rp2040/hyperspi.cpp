@@ -71,6 +71,21 @@ uint8_t spiBuffer[SPI_FRAME_SIZE] {};
 	#pragma message(VAR_NAME_VALUE(COLD_WHITE))
 #endif
 
+// -----------------------------------------------------------------------
+// LED driver type selection
+//
+// Single segment  → sk6812  / ws2812  (single PIO output)
+// 2–4 segments    → sk6812p / ws2812p (parallel PIO outputs)
+//
+// LED_DRIVER  always controls segment 1.
+// LED_DRIVER2 always controls segment 2 (when SECOND_SEGMENT_START_INDEX is set).
+// LED_DRIVER3 always controls segment 3 (when THIRD_SEGMENT_START_INDEX is set).
+// LED_DRIVER4 always controls segment 4 (when FOURTH_SEGMENT_START_INDEX is set).
+//
+// Segments that are not used get a lightweight no-op stub so that base.h
+// can reference all four types unconditionally.
+// -----------------------------------------------------------------------
+
 #ifdef NEOPIXEL_RGBW
 	#define LED_DRIVER sk6812
 #elif NEOPIXEL_RGB
@@ -83,29 +98,80 @@ uint8_t spiBuffer[SPI_FRAME_SIZE] {};
 #pragma message(VAR_NAME_VALUE(SPI_CLOCK_PIN))
 #pragma message(VAR_NAME_VALUE(SPI_CHIP_SELECT))
 
+// -----------------------------------------------------------------------
+// Parallel driver stubs — used for any segment slot that is inactive.
+// They satisfy the LED_DRIVERn type requirements without doing anything.
+// -----------------------------------------------------------------------
+class NullLedDriver {
+	public:
+		NullLedDriver(int, int) {}
+		void Begin() {}
+		bool CanShow() { return true; }
+		void Show(bool) {}
+		void SetPixelColor(uint16_t, ColorDefinition&) {}
+};
+
+// -----------------------------------------------------------------------
+// Segment driver type resolution
+// -----------------------------------------------------------------------
+
 #if defined(SECOND_SEGMENT_START_INDEX)
-	#pragma message("Using parallel mode for segments")
+	// At least two segments → switch all active drivers to parallel PIO mode
+	#pragma message("Using parallel PIO mode for multi-segment output")
 
 	#ifdef NEOPIXEL_RGBW
-			#undef LED_DRIVER
-			#define LED_DRIVER sk6812p
-			#define LED_DRIVER2 sk6812p
+		#undef LED_DRIVER
+		#define LED_DRIVER  sk6812p
+		#define LED_DRIVER2 sk6812p
+		#define LED_DRIVER3 sk6812p
+		#define LED_DRIVER4 sk6812p
 	#elif NEOPIXEL_RGB
-			#undef LED_DRIVER
-			#define LED_DRIVER ws2812p
-			#define LED_DRIVER2 ws2812p
+		#undef LED_DRIVER
+		#define LED_DRIVER  ws2812p
+		#define LED_DRIVER2 ws2812p
+		#define LED_DRIVER3 ws2812p
+		#define LED_DRIVER4 ws2812p
 	#else
-		#error "Parallel mode is unsupportd for selected LEDs configuration"
+		#error "Parallel mode is unsupported for the selected LED configuration"
 	#endif
 
 	#pragma message(VAR_NAME_VALUE(LED_DRIVER))
 	#pragma message(VAR_NAME_VALUE(SECOND_SEGMENT_START_INDEX))
-	#pragma message(VAR_NAME_VALUE(LED_DRIVER2))
-	#pragma message(VAR_NAME_VALUE(SECOND_SEGMENT_REVERSED))
-#else
-	#pragma message(VAR_NAME_VALUE(LED_DRIVER))
+	#pragma message(VAR_NAME_VALUE(SECOND_SEGMENT_DATA_PIN))
+	#ifdef SECOND_SEGMENT_REVERSED
+		#pragma message("SECOND_SEGMENT_REVERSED = ON")
+	#endif
 
-	typedef LedDriver LED_DRIVER2;
+	#if defined(THIRD_SEGMENT_START_INDEX)
+		#pragma message(VAR_NAME_VALUE(THIRD_SEGMENT_START_INDEX))
+		#pragma message(VAR_NAME_VALUE(THIRD_SEGMENT_DATA_PIN))
+		#ifdef THIRD_SEGMENT_REVERSED
+			#pragma message("THIRD_SEGMENT_REVERSED = ON")
+		#endif
+	#else
+		// Segment 3 slot unused — provide stub
+		#undef  LED_DRIVER3
+		typedef NullLedDriver LED_DRIVER3;
+	#endif
+
+	#if defined(FOURTH_SEGMENT_START_INDEX)
+		#pragma message(VAR_NAME_VALUE(FOURTH_SEGMENT_START_INDEX))
+		#pragma message(VAR_NAME_VALUE(FOURTH_SEGMENT_DATA_PIN))
+		#ifdef FOURTH_SEGMENT_REVERSED
+			#pragma message("FOURTH_SEGMENT_REVERSED = ON")
+		#endif
+	#else
+		// Segment 4 slot unused — provide stub
+		#undef  LED_DRIVER4
+		typedef NullLedDriver LED_DRIVER4;
+	#endif
+
+#else
+	// Single-segment mode — slots 2/3/4 are all stubs
+	#pragma message(VAR_NAME_VALUE(LED_DRIVER))
+	typedef NullLedDriver LED_DRIVER2;
+	typedef NullLedDriver LED_DRIVER3;
+	typedef NullLedDriver LED_DRIVER4;
 #endif
 
 /////////////////////////////////////////////////////////////////////////
