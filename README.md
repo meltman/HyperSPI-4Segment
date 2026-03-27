@@ -1,4 +1,4 @@
-# HyperSPI - 4Segment
+# HyperSPI - 4Segment (RPI2040 ONLY)
 SPI bridge for AWA protocol to control a LED strip from HyperHDR.  
 Diagnostic and performance data available at the serial port output [read more](#performancedebug-output).  
 Raspberry Pi acts as a master, ESP8266/ESP32/ESP32-S2/rp2040(Raspberry Pi Pico) is in slave mode. 
