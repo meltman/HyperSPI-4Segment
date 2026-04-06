@@ -103,12 +103,13 @@ uint8_t spiBuffer[SPI_FRAME_SIZE] {};
 // They satisfy the LED_DRIVERn type requirements without doing anything.
 // -----------------------------------------------------------------------
 class NullLedDriver {
-	public:
-		NullLedDriver(int, int) {}
-		void Begin() {}
-		bool CanShow() { return true; }
-		void Show(bool) {}
-		void SetPixelColor(uint16_t, ColorDefinition&) {}
+    public:
+        NullLedDriver(int, int) {}
+        void Begin() {}
+        bool CanShow() { return true; }
+        void Show(bool) {}
+        template<typename T>
+        void SetPixelColor(uint16_t, T&) {}
 };
 
 // -----------------------------------------------------------------------
