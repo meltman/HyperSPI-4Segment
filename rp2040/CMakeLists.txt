@@ -1,46 +1,29 @@
 set(CMAKE_SYSTEM_NAME Generic)
 # User configuration section starts here
 
-# Some boards, such as the first Adafruit revisions, may have trouble booting properly
-# due to bad componets used in the design.
-# Turn this setting to ON if your rp2040 is not detected after firmware upload and reset
 set(BOOT_WORKAROUND ON)
 
-# Default output data pin for the non-SPI LED strips (only for sk6812/ws2812b)
+# Segment 0: 220 LEDs on GPIO 14
 set(OUTPUT_DATA_PIN 14)
 
-# -----------------------------------------------------------------------
-# Multi-segment support (up to 4 segments)
-#
-# To enable additional segments, set their START_INDEX to the cumulative
-# LED count at which that segment begins, and set their DATA_PIN.
-# Set REVERSED to ON if that segment runs in the opposite direction.
-#
-# Example — 4 segments of 150 LEDs each (600 LEDs total):
-#   SECOND_SEGMENT_INDEX  = 150   DATA_PIN = 15   REVERSED = OFF
-#   THIRD_SEGMENT_INDEX   = 300   DATA_PIN = 16   REVERSED = ON
-#   FOURTH_SEGMENT_INDEX  = 450   DATA_PIN = 17   REVERSED = OFF
-#
-# In HyperHDR configure a single continuous strip of 600 LEDs.
-# Segments 2-4 must each have a HIGHER start index than the previous one.
-# -----------------------------------------------------------------------
-
-# Second segment
+# Segment 1: 124 LEDs — starts at index 220
 set(SECOND_SEGMENT_INDEX 220)
-set(SECOND_SEGMENT_DATA_PIN 15)
 set(SECOND_SEGMENT_REVERSED OFF)
 
-# Third segment (requires SECOND_SEGMENT_INDEX to also be set)
+# Segment 2: 220 LEDs — starts at index 344
 set(THIRD_SEGMENT_INDEX 344)
-set(THIRD_SEGMENT_DATA_PIN 16)
 set(THIRD_SEGMENT_REVERSED OFF)
 
-# Fourth segment (requires SECOND_SEGMENT_INDEX and THIRD_SEGMENT_INDEX to also be set)
+# Segment 3: 124 LEDs — starts at index 564
 set(FOURTH_SEGMENT_INDEX 564)
-set(FOURTH_SEGMENT_DATA_PIN 17)
 set(FOURTH_SEGMENT_REVERSED OFF)
 
-# HyperSPI communication interface with Raspberry Pi
+# Pins for segments 1, 2, 3
+set(SECOND_SEGMENT_PIN 15)
+set(THIRD_SEGMENT_PIN  16)
+set(FOURTH_SEGMENT_PIN 17)
+
+# SPI interface (unchanged from your current config)
 set(OUTPUT_SPI_DATA_PIN 4)
 set(OUTPUT_SPI_CLOCK_PIN 2)
 set(OUTPUT_SPI_CHIP_SELECT 5)
