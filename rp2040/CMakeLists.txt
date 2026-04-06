@@ -4,7 +4,7 @@ set(CMAKE_SYSTEM_NAME Generic)
 set(BOOT_WORKAROUND ON)
 
 # Segment 0: 220 LEDs on GPIO 14
-set(OUTPUT_DATA_PIN 14)
+set(OUTPUT_DATA_PIN 16)
 
 # Segment 1: 124 LEDs — starts at index 220
 set(SECOND_SEGMENT_INDEX 220)
@@ -19,9 +19,9 @@ set(FOURTH_SEGMENT_INDEX 564)
 set(FOURTH_SEGMENT_REVERSED OFF)
 
 # Pins for segments 1, 2, 3
-set(SECOND_SEGMENT_PIN 15)
-set(THIRD_SEGMENT_PIN  16)
-set(FOURTH_SEGMENT_PIN 17)
+set(SECOND_SEGMENT_PIN 17)
+set(THIRD_SEGMENT_PIN  18)
+set(FOURTH_SEGMENT_PIN 19)
 
 # SPI interface (unchanged from your current config)
 set(OUTPUT_SPI_DATA_PIN 4)
