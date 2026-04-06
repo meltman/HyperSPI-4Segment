@@ -26,17 +26,17 @@ set(OUTPUT_DATA_PIN 14)
 # -----------------------------------------------------------------------
 
 # Second segment
-set(SECOND_SEGMENT_INDEX OFF)
+set(SECOND_SEGMENT_INDEX 220)
 set(SECOND_SEGMENT_DATA_PIN 15)
 set(SECOND_SEGMENT_REVERSED OFF)
 
 # Third segment (requires SECOND_SEGMENT_INDEX to also be set)
-set(THIRD_SEGMENT_INDEX OFF)
+set(THIRD_SEGMENT_INDEX 344)
 set(THIRD_SEGMENT_DATA_PIN 16)
 set(THIRD_SEGMENT_REVERSED OFF)
 
 # Fourth segment (requires SECOND_SEGMENT_INDEX and THIRD_SEGMENT_INDEX to also be set)
-set(FOURTH_SEGMENT_INDEX OFF)
+set(FOURTH_SEGMENT_INDEX 564)
 set(FOURTH_SEGMENT_DATA_PIN 17)
 set(FOURTH_SEGMENT_REVERSED OFF)
 
