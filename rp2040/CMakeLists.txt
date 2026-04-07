@@ -1,10 +1,10 @@
 set(CMAKE_SYSTEM_NAME Generic)
 # User configuration section starts here
-# does this work? No
+
 set(BOOT_WORKAROUND ON)
 
-# Segment 0: 220 LEDs on GPIO 14
-set(OUTPUT_DATA_PIN 16)
+# Segment 0: 220 LEDs on GPIO 16
+set(OUTPUT_DATA_PIN 2)
 
 # Segment 1: 124 LEDs — starts at index 220
 set(SECOND_SEGMENT_INDEX 220)
@@ -18,12 +18,12 @@ set(THIRD_SEGMENT_REVERSED OFF)
 set(FOURTH_SEGMENT_INDEX 564)
 set(FOURTH_SEGMENT_REVERSED OFF)
 
-# Pins for segments 1, 2, 3
+# Per-segment data pins (used in data_pin defines passed to compiler)
 set(SECOND_SEGMENT_DATA_PIN 17)
 set(THIRD_SEGMENT_DATA_PIN  18)
 set(FOURTH_SEGMENT_DATA_PIN 19)
 
-# SPI interface (unchanged from your current config)
+# SPI interface for Scorpio (overridden by GitHub Action for Scorpio build)
 set(OUTPUT_SPI_DATA_PIN 4)
 set(OUTPUT_SPI_CLOCK_PIN 2)
 set(OUTPUT_SPI_CHIP_SELECT 5)
@@ -64,13 +64,23 @@ if (OVERRIDE_SPI_INTERFACE)
 	message( STATUS "${YellowColor}Overriding input SPI Interface: ${OUTPUT_SPI_INTERFACE}${ColorReset}")
 endif()
 
-# Validate segment ordering
-if (THIRD_SEGMENT_INDEX AND NOT SECOND_SEGMENT_INDEX)
-	message(FATAL_ERROR "THIRD_SEGMENT_INDEX requires SECOND_SEGMENT_INDEX to be set")
+message( STATUS "---------------------------")
+message( STATUS "Neopixel Data GPIO: ${GreenColor}${OUTPUT_DATA_PIN}${ColorReset}")
+message( STATUS "SPI Data GPIO: ${GreenColor}${OUTPUT_SPI_DATA_PIN}${ColorReset}")
+message( STATUS "SPI Clock GPIO: ${GreenColor}${OUTPUT_SPI_CLOCK_PIN}${ColorReset}")
+message( STATUS "SPI Select GPIO: ${GreenColor}${OUTPUT_SPI_CHIP_SELECT}${ColorReset}")
+message( STATUS "SPI Interface: ${GreenColor}${OUTPUT_SPI_INTERFACE}${ColorReset}")
+message( STATUS "Boot workaround: ${GreenColor}${BOOT_WORKAROUND}${ColorReset}")
+if (SECOND_SEGMENT_INDEX)
+	message( STATUS "2nd segment start: ${GreenColor}${SECOND_SEGMENT_INDEX}${ColorReset}")
 endif()
-if (FOURTH_SEGMENT_INDEX AND NOT THIRD_SEGMENT_INDEX)
-	message(FATAL_ERROR "FOURTH_SEGMENT_INDEX requires THIRD_SEGMENT_INDEX to be set")
+if (THIRD_SEGMENT_INDEX)
+	message( STATUS "3rd segment start: ${GreenColor}${THIRD_SEGMENT_INDEX}${ColorReset}")
 endif()
+if (FOURTH_SEGMENT_INDEX)
+	message( STATUS "4th segment start: ${GreenColor}${FOURTH_SEGMENT_INDEX}${ColorReset}")
+endif()
+message( STATUS "---------------------------")
 
 cmake_minimum_required(VERSION 3.13)
 
@@ -85,67 +95,45 @@ pico_sdk_init()
 set(PICO_PROGRAM_MAIN_ENTRY "../hyperspi.cpp")
 set(DISABLE_SPI_LEDS ON)
 
-# Always pass SPI interface defines
-set(SEGMENT_DEFINES
+# Pass SPI and all segment defines to the compiler.
+# SECOND/THIRD/FOURTH_SEGMENT_START_INDEX are also passed via
+# target_compile_definitions in HyperSerialPico/CMakeLists.txt,
+# but add_definitions ensures hyperspi.cpp also sees them.
+add_definitions(
 	-DSPI_INTERFACE=${OUTPUT_SPI_INTERFACE}
 	-DSPI_DATA_PIN=${OUTPUT_SPI_DATA_PIN}
 	-DSPI_CLOCK_PIN=${OUTPUT_SPI_CLOCK_PIN}
 	-DSPI_CHIP_SELECT=${OUTPUT_SPI_CHIP_SELECT}
 )
 
-# Second segment
 if (SECOND_SEGMENT_INDEX)
-	message(STATUS "${GreenColor}Second segment enabled: start=${SECOND_SEGMENT_INDEX} pin=${SECOND_SEGMENT_DATA_PIN} reversed=${SECOND_SEGMENT_REVERSED}${ColorReset}")
-	list(APPEND SEGMENT_DEFINES
+	add_definitions(
 		-DSECOND_SEGMENT_START_INDEX=${SECOND_SEGMENT_INDEX}
 		-DSECOND_SEGMENT_DATA_PIN=${SECOND_SEGMENT_DATA_PIN}
 	)
 	if (SECOND_SEGMENT_REVERSED)
-		list(APPEND SEGMENT_DEFINES -DSECOND_SEGMENT_REVERSED)
+		add_definitions(-DSECOND_SEGMENT_REVERSED)
 	endif()
 endif()
 
-# Third segment
 if (THIRD_SEGMENT_INDEX)
-	message(STATUS "${GreenColor}Third segment enabled: start=${THIRD_SEGMENT_INDEX} pin=${THIRD_SEGMENT_DATA_PIN} reversed=${THIRD_SEGMENT_REVERSED}${ColorReset}")
-	list(APPEND SEGMENT_DEFINES
+	add_definitions(
 		-DTHIRD_SEGMENT_START_INDEX=${THIRD_SEGMENT_INDEX}
 		-DTHIRD_SEGMENT_DATA_PIN=${THIRD_SEGMENT_DATA_PIN}
 	)
 	if (THIRD_SEGMENT_REVERSED)
-		list(APPEND SEGMENT_DEFINES -DTHIRD_SEGMENT_REVERSED)
+		add_definitions(-DTHIRD_SEGMENT_REVERSED)
 	endif()
 endif()
 
-# Fourth segment
 if (FOURTH_SEGMENT_INDEX)
-	message(STATUS "${GreenColor}Fourth segment enabled: start=${FOURTH_SEGMENT_INDEX} pin=${FOURTH_SEGMENT_DATA_PIN} reversed=${FOURTH_SEGMENT_REVERSED}${ColorReset}")
-	list(APPEND SEGMENT_DEFINES
+	add_definitions(
 		-DFOURTH_SEGMENT_START_INDEX=${FOURTH_SEGMENT_INDEX}
 		-DFOURTH_SEGMENT_DATA_PIN=${FOURTH_SEGMENT_DATA_PIN}
 	)
 	if (FOURTH_SEGMENT_REVERSED)
-		list(APPEND SEGMENT_DEFINES -DFOURTH_SEGMENT_REVERSED)
+		add_definitions(-DFOURTH_SEGMENT_REVERSED)
 	endif()
-endif()
-
-add_definitions(
-    -DSPI_INTERFACE=${OUTPUT_SPI_INTERFACE}
-    -DSPI_DATA_PIN=${OUTPUT_SPI_DATA_PIN}
-    -DSPI_CLOCK_PIN=${OUTPUT_SPI_CLOCK_PIN}
-    -DSPI_CHIP_SELECT=${OUTPUT_SPI_CHIP_SELECT}
-    -DSECOND_SEGMENT_START_INDEX=${SECOND_SEGMENT_INDEX}
-    -DSECOND_SEGMENT_PIN=${SECOND_SEGMENT_PIN}
-    -DTHIRD_SEGMENT_START_INDEX=${THIRD_SEGMENT_INDEX}
-    -DTHIRD_SEGMENT_PIN=${THIRD_SEGMENT_PIN}
-    -DFOURTH_SEGMENT_START_INDEX=${FOURTH_SEGMENT_INDEX}
-    -DFOURTH_SEGMENT_PIN=${FOURTH_SEGMENT_PIN}
-)
-if(THIRD_SEGMENT_REVERSED)
-    add_definitions(-DTHIRD_SEGMENT_REVERSED)
-endif()
-if(FOURTH_SEGMENT_REVERSED)
-    add_definitions(-DFOURTH_SEGMENT_REVERSED)
 endif()
 
 add_subdirectory(HyperSerialPico)
