@@ -24,10 +24,10 @@ set(THIRD_SEGMENT_PIN  18)
 set(FOURTH_SEGMENT_PIN 19)
 
 # SPI interface (unchanged from your current config)
-set(OUTPUT_SPI_DATA_PIN 4)
-set(OUTPUT_SPI_CLOCK_PIN 2)
-set(OUTPUT_SPI_CHIP_SELECT 5)
-set(OUTPUT_SPI_INTERFACE spi0)
+set(OUTPUT_SPI_DATA_PIN 28)    # A2
+set(OUTPUT_SPI_CLOCK_PIN 26)   # A0
+set(OUTPUT_SPI_CHIP_SELECT 29) # A3
+set(OUTPUT_SPI_INTERFACE spi1)
 
 # User configuration section ends here
 # Usually you don't need to change anything below this section
