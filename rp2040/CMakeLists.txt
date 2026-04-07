@@ -8,15 +8,15 @@ set(OUTPUT_DATA_PIN 2)
 
 # Segment 1: 124 LEDs — starts at index 220
 set(SECOND_SEGMENT_INDEX 220)
-set(SECOND_SEGMENT_REVERSED OFF)
+set(SECOND_SEGMENT_REVERSED ON)
 
 # Segment 2: 220 LEDs — starts at index 344
 set(THIRD_SEGMENT_INDEX 344)
-set(THIRD_SEGMENT_REVERSED OFF)
+set(THIRD_SEGMENT_REVERSED ON)
 
 # Segment 3: 124 LEDs — starts at index 564
 set(FOURTH_SEGMENT_INDEX 564)
-set(FOURTH_SEGMENT_REVERSED OFF)
+set(FOURTH_SEGMENT_REVERSED ON)
 
 # Per-segment data pins (used in data_pin defines passed to compiler)
 set(SECOND_SEGMENT_DATA_PIN 17)
