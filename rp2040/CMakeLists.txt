@@ -1,6 +1,6 @@
 set(CMAKE_SYSTEM_NAME Generic)
 # User configuration section starts here
-#Comment to build
+
 set(BOOT_WORKAROUND ON)
 
 # Segment 0: 220 LEDs on GPIO 14
