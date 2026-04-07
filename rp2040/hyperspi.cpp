@@ -54,6 +54,10 @@ uint8_t spiBuffer[SPI_FRAME_SIZE] {};
 #define VAR_NAME_VALUE(var) #var " = " _XSTR(var)
 #define _XSTR2(x,y) _STR(x) _STR(y)
 #define VAR_NAME_VALUE2(var) #var " = " _XSTR2(var)
+#define _XSTR3(x,y) _STR(x) _STR(y)
+#define VAR_NAME_VALUE2(var) #var " = " _XSTR3(var)
+#define _XSTR4(x,y) _STR(x) _STR(y)
+#define VAR_NAME_VALUE2(var) #var " = " _XSTR4(var)
 
 #if defined(BOOT_WORKAROUND) && defined(PICO_XOSC_STARTUP_DELAY_MULTIPLIER)
 	#pragma message("Enabling boot workaround")
@@ -83,17 +87,21 @@ uint8_t spiBuffer[SPI_FRAME_SIZE] {};
 #pragma message(VAR_NAME_VALUE(SPI_CLOCK_PIN))
 #pragma message(VAR_NAME_VALUE(SPI_CHIP_SELECT))
 
-#if defined(SECOND_SEGMENT_START_INDEX)
+#if defined(FOURTH_SEGMENT_START_INDEX)
 	#pragma message("Using parallel mode for segments")
 
 	#ifdef NEOPIXEL_RGBW
 			#undef LED_DRIVER
 			#define LED_DRIVER sk6812p
 			#define LED_DRIVER2 sk6812p
+			#define LED_DRIVER3 sk6812p
+			#define LED_DRIVER4 sk6812p
 	#elif NEOPIXEL_RGB
 			#undef LED_DRIVER
 			#define LED_DRIVER ws2812p
 			#define LED_DRIVER2 ws2812p
+			#define LED_DRIVER3 ws2812p
+			#define LED_DRIVER4 ws2812p
 	#else
 		#error "Parallel mode is unsupportd for selected LEDs configuration"
 	#endif
@@ -102,6 +110,10 @@ uint8_t spiBuffer[SPI_FRAME_SIZE] {};
 	#pragma message(VAR_NAME_VALUE(SECOND_SEGMENT_START_INDEX))
 	#pragma message(VAR_NAME_VALUE(LED_DRIVER2))
 	#pragma message(VAR_NAME_VALUE(SECOND_SEGMENT_REVERSED))
+	#pragma message(VAR_NAME_VALUE(LED_DRIVER3))
+	#pragma message(VAR_NAME_VALUE(THIRD_SEGMENT_REVERSED))
+	#pragma message(VAR_NAME_VALUE(LED_DRIVER4))
+	#pragma message(VAR_NAME_VALUE(FOURTH_SEGMENT_REVERSED))
 #else
 	#pragma message(VAR_NAME_VALUE(LED_DRIVER))
 
